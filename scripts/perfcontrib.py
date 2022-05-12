@@ -79,7 +79,7 @@ def authenticate() -> str:
             with urlopen(Request(f"{aadUrl}/oauth2/v2.0/token", data = authBody2Encoded)) as response:
                 tokenResponse = loads(response.read().decode('utf-8'))
             authStatus = "done"
-        except Exception as ex:
+        except HTTPError as ex:
             reason = loads(ex.read().decode('utf-8'))["error"]
             if reason == "authorization_pending":
                 print(".", end="", flush=True)
@@ -91,7 +91,7 @@ def authenticate() -> str:
 
     print()
 
-    if authStatus == "failed": raise "Authentication failed"
+    if authStatus == "failed": raise Exception("Authentication failed")
 
     idToken = tokenResponse["id_token"]
 
